@@ -1,9 +1,9 @@
 <?php
 
-namespace Lesstif\ConfluenceRestApi;
+namespace Lesstif\Confluence;
 
-use Lesstif\ConfluenceRestApi\Configuration\ConfigurationInterface;
-use Lesstif\ConfluenceRestApi\Configuration\DotEnvConfiguration;
+use Lesstif\Confluence\Configuration\ConfigurationInterface;
+use Lesstif\Confluence\Configuration\DotEnvConfiguration;
 use Monolog\Logger as Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -31,7 +31,7 @@ class ConfluenceClient
      *
      * @var string
      */
-    private $api_uri = '/rest/api';
+    protected $api_uri = '/rest/api';
 
     /**
      * guzzle instance.
@@ -58,7 +58,7 @@ class ConfluenceClient
      * Constructor.
      *
      * @param ConfigurationInterface $configuration
-     * @param Logger $logger
+     * @param Logger                 $logger
      */
     public function __construct(ConfigurationInterface $configuration = null, Logger $logger = null)
     {
@@ -75,18 +75,18 @@ class ConfluenceClient
         $this->json_mapper = new \JsonMapper();
 
         $this->json_mapper->undefinedPropertyHandler = [
-            \Lesstif\ConfluenceRestApi\JsonMapperHelper::class,
-            'setUndefinedProperty'
+            \Lesstif\Confluence\JsonMapperHelper::class,
+            'setUndefinedProperty',
         ];
 
         // create logger
         if ($logger) {
             $this->log = $logger;
         } else {
-            $this->log = new Logger('ConfluenceRestApi');
+            $this->log = new Logger('Confluence');
             $this->log->pushHandler(new StreamHandler(
-                $configuration->getJiraLogFile(),
-                $this->convertLogLevel($configuration->getJiraLogLevel())
+                $configuration->getLogFile(),
+                $this->convertLogLevel($configuration->getLogLevel())
             ));
         }
 
@@ -139,6 +139,36 @@ class ConfluenceClient
     }
 
     /**
+     *  Execute REST get action.
+     *
+     * @param $uri
+     *
+     * @return mixed
+     *
+     * @throws
+     */
+    public function get($uri)
+    {
+        $client = new \GuzzleHttp\Client([
+            'base_uri' => $this->gitHost,
+            'timeout' => 10.0,
+            'verify' => false,
+        ]);
+        $response = $client->get($this->gitHost.$this->api_uri.$uri, [
+            'query' => [
+                'private_token' => $this->gitToken,
+                'per_page' => 10000,
+            ],
+        ]);
+        if ($response->getStatusCode() != 200) {
+            throw GitlabException('Http request failed. status code : '
+                .$response->getStatusCode().' reason:'.$response->getReasonPhrase());
+        }
+
+        return json_decode($response->getBody());
+    }
+
+    /**
      * Execute REST request.
      *
      * @param string $context        Rest API context (ex.:issue, search, etc..)
@@ -147,7 +177,7 @@ class ConfluenceClient
      *
      * @return string
      *
-     * @throws JiraException
+     * @throws ConfluenceException
      */
     public function exec($context, $post_data = null, $custom_request = null)
     {
@@ -176,14 +206,15 @@ class ConfluenceClient
 
         $this->authorization($ch);
 
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->getConfiguration()->isCurlOptSslVerifyHost());
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->getConfiguration()->isCurlOptSslVerifyPeer());
+        //FIXME
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->getConfiguration()->isCurlOptSslVerifyHost());
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->getConfiguration()->isCurlOptSslVerifyPeer());
 
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER,
             array('Accept: */*', 'Content-Type: application/json'));
 
-        curl_setopt($ch, CURLOPT_VERBOSE, $this->getConfiguration()->isCurlOptVerbose());
+        curl_setopt($ch, CURLOPT_VERBOSE, $this->getConfiguration()->isVerbose());
 
         $this->log->addDebug('Curl exec='.$url);
         $response = curl_exec($ch);
@@ -201,7 +232,7 @@ class ConfluenceClient
 
             // HostNotFound, No route to Host, etc Network error
             $this->log->addError('CURL Error: = '.$body);
-            throw new JiraException('CURL Error: = '.$body);
+            throw new ConfluenceException('CURL Error: = '.$body);
         } else {
             // if request was ok, parsing http response code.
             $this->http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -210,7 +241,7 @@ class ConfluenceClient
 
             // don't check 301, 302 because setting CURLOPT_FOLLOWLOCATION
             if ($this->http_response != 200 && $this->http_response != 201) {
-                throw new JiraException('CURL HTTP Request Failed: Status Code : '
+                throw new ConfluenceException('CURL HTTP Request Failed: Status Code : '
                  .$this->http_response.', URL:'.$url
                  ."\nError Message : ".$response, $this->http_response);
             }
@@ -283,7 +314,7 @@ class ConfluenceClient
      *
      * @return array
      *
-     * @throws JiraException
+     * @throws ConfluenceException
      */
     public function upload($context, $filePathArray)
     {
@@ -358,7 +389,7 @@ end:
         curl_multi_close($mh);
         if ($result_code != 200) {
             // @TODO $body might have not been defined
-            throw new JiraException('CURL Error: = '.$body, $result_code);
+            throw new ConfluenceException('CURL Error: = '.$body, $result_code);
         }
 
         return $results;
@@ -373,7 +404,7 @@ end:
      */
     protected function createUrlByContext($context)
     {
-        $host = $this->getConfiguration()->getJiraHost();
+        $host = $this->getConfiguration()->getHost();
 
         return $host.$this->api_uri.'/'.preg_replace('/\//', '', $context, 1);
     }
@@ -387,13 +418,15 @@ end:
      */
     protected function authorization($ch)
     {
-        $username = $this->getConfiguration()->getJiraUser();
-        $password = $this->getConfiguration()->getJiraPassword();
-        curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+        $username = $this->getConfiguration()->getUser();
+        $password = $this->getConfiguration()->getPassword();
+        if (!empty($username) && !empty($password)) {
+            curl_setopt($ch, CURLOPT_USERPWD, "$username:$password");
+        }
     }
 
     /**
-     * Jira Rest API Configuration.
+     * Confluence Rest API Configuration.
      *
      * @return ConfigurationInterface
      */
