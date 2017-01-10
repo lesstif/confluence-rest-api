@@ -1,6 +1,20 @@
 # PHP Confluence Rest Client
 
-Atlassian's Confluence & Confluence Question REST API Client.
+Atlassian's Confluence & Confluence Question REST API Client for PHP Users.
+
+## installation
+
+```sh
+composer require 'lesstif/confluence-rest-api'
+```
+
+or update your composer.json.
+
+```
+"require": {
+    "lesstif/confluence-rest-api": "^0.1"
+}
+```
 
 # Usage
 

@@ -1,5 +1,5 @@
 {
-    "name": "lesstif/confluence-rest-client",
+    "name": "lesstif/confluence-rest-api",
     "description": "Confluence REST API Client for PHP Users.",
     "type": "library",
     "keywords": ["confluence", "rest", "confluence-php", "confluence-rest"],
