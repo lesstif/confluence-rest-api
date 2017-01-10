@@ -1,6 +1,7 @@
 <?php namespace Lesstif\Confluence\Question;
 
 use Lesstif\Confluence\ConfluenceClient;
+use Lesstif\Confluence\ConfluenceException;
 
 /**
  * Confluence Questions REST Service class
@@ -44,4 +45,25 @@ class QuestionService extends ConfluenceClient
         );
     }
 
+    /**
+     * Get a question by its ID
+     *
+     * @param $id question id
+     *
+     * @return string
+     */
+    public function getQuestionDetail($id)
+    {
+        if (empty($id))
+        {
+            throw new ConfluenceException('Question id must be not null.! ');
+        }
+
+        $ret = $this->exec($this->url . 'question/' . $id, null);
+
+        return $searchResults = $this->json_mapper->map(
+            json_decode($ret),  new Question()
+        );
+
+    }
 }

@@ -16,6 +16,32 @@ or update your composer.json.
 }
 ```
 
+## Configuration
+
+you can choose loads environment variables either 'dotenv' or 'array'.
+
+### use dotenv
+
+copy .env.example file to .env on your project root directory.
+
+CONFLUENCE_HOST="https://your-confluence.host.com"
+CONFLUENCE_USER="confluence-username"
+CONFLUENCE_PASS="confluence-password"
+
+### use array
+
+create Service class with ArrayConfiguration parameter.
+
+use Lesstif\Confluence\Question\QuestionService;
+
+$qs = new QuestionService(new \Lesstif\Confluence\Configuration\ArrayConfiguration(
+          [
+              'host' => 'https://your-confluence.host.com',
+              'user' => 'confluence-username',
+              'password' => 'confluence-password',
+          ]
+   ));
+
 # Usage
 
 ## CQL
@@ -39,6 +65,8 @@ try {
 ```
 
 ## Question
+
+### get Question list
 
 ```php
 
@@ -67,6 +95,27 @@ try {
     $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
 }
 
+```
+
+### get Question's detail info.
+
+```php
+try {
+    $qs = new QuestionService();
+
+    $q = $qs->getQuestionDetail($questionId);
+
+    foreach($q->answers as $a)
+    {
+        // print accepted answer
+        if ($a->accepted === true) {
+            dump($a);
+        }
+    }
+
+} catch (\Lesstif\Confluence\ConfluenceException $e) {
+    $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
+}
 ```
 
 # Confluence Rest API Documents

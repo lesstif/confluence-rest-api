@@ -24,3 +24,4 @@ config.jira.json
 jira-rest-client.log
 
 .env
+log
