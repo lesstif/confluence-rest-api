@@ -4,7 +4,7 @@ use Lesstif\Confluence\ConfluenceClient;
 
 class CQLService extends ConfluenceClient
 {
-    public $uri = '/content/search';
+    public $uri = '/api/content/search';
 
     public function search($paramArray = null)
     {

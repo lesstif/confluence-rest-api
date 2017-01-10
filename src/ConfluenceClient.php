@@ -31,7 +31,7 @@ class ConfluenceClient
      *
      * @var string
      */
-    protected $api_uri = '/rest/api';
+    protected $api_uri = '/rest';
 
     /**
      * guzzle instance.
