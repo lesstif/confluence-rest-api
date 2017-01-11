@@ -23,6 +23,8 @@ class QuestionService extends ConfluenceClient
                     'filter' => 'recent',
                     ];
 
+   private $accceptedAnswerId = null;
+
     /**
      * get question list
      *
@@ -56,6 +58,9 @@ class QuestionService extends ConfluenceClient
      */
     public function getQuestionDetail($questionId)
     {
+        // clear old value
+        $this->accceptedAnswerId = null;
+
         if (empty($questionId))
         {
             throw new ConfluenceException('Question id must be not null.! ');
@@ -63,9 +68,13 @@ class QuestionService extends ConfluenceClient
 
         $ret = $this->exec($this->url . 'question/' . $questionId, null);
 
-        return $question = $this->json_mapper->map(
+        $question = $this->json_mapper->map(
             json_decode($ret),  new Question()
         );
+
+        $this->accceptedAnswerId = $question->accceptedAnswerId;
+
+        return $question;
     }
 
     /**
@@ -86,5 +95,21 @@ class QuestionService extends ConfluenceClient
         $as = new AnswerService();
 
         return $as->getAnswerDetail($question->acceptedAnswerId);
+    }
+
+    /**
+     * determine question has accepted answer
+     *
+     * @param null $questionId
+     * @return bool|null
+     */
+    public function hasAcceptedAnswer($questionId = null)
+    {
+        if ($questionId === null)
+            return !is_null($this->accceptedAnswerId) ? true : false;
+
+        $as = $this->getAcceptedAnswer($questionId);
+
+        return !is_null($as) ? true : false;
     }
 }
