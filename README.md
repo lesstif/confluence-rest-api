@@ -66,7 +66,7 @@ try {
 
 ## Question
 
-### get Question list
+### getting Question list
 
 ```php
 
@@ -97,7 +97,7 @@ try {
 
 ```
 
-### get Question's detail info.
+### getting Question's detail info.
 
 ```php
 try {
@@ -111,6 +111,60 @@ try {
         if ($a->accepted === true) {
             dump($a);
         }
+    }
+
+} catch (\Lesstif\Confluence\ConfluenceException $e) {
+    $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
+}
+```
+
+### getting accepted answer
+
+```php
+try {
+    $qs = new QuestionService();
+
+    $q = $qs->getAcceptedAnswer($questionId);
+    dump($q);
+
+} catch (\Lesstif\Confluence\ConfluenceException $e) {
+    $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
+}
+```
+
+## Answer
+
+### getting user's answer list
+
+```php
+try {
+    $username = 'lesstif';
+
+    $as = new AnswerService();
+
+    $ans = $as->getAnswers($username);
+
+    foreach($ans as $a) {
+        dump($a);
+    }
+
+} catch (\Lesstif\Confluence\ConfluenceException $e) {
+    $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
+}
+```
+
+### getting related question.
+
+```php
+try {
+    $username = 'lesstif';
+
+    $as = new AnswerService();
+
+    $ans = $as->getAnswers($username);
+
+    foreach($ans as $a) {
+        dump($a);
     }
 
 } catch (\Lesstif\Confluence\ConfluenceException $e) {

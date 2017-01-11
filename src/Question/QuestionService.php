@@ -1,7 +1,11 @@
 <?php namespace Lesstif\Confluence\Question;
 
+use Lesstif\Confluence\Answer\Answer;
+use Lesstif\Confluence\Answer\AnswerService;
 use Lesstif\Confluence\ConfluenceClient;
 use Lesstif\Confluence\ConfluenceException;
+
+use Lesstif\Confluence\Constants;
 
 /**
  * Confluence Questions REST Service class
@@ -10,10 +14,8 @@ use Lesstif\Confluence\ConfluenceException;
  */
 class QuestionService extends ConfluenceClient
 {
-    const QUESTION_REST_VERSION = '1.0';
-
     // override parent uri
-    public $url = '/questions/1.0/';
+    public $url = '/questions/' . Constants::QUESTION_REST_API_VERSION . '/';
 
     private $defaultParam = [
                     'limit' => 10,
@@ -48,22 +50,41 @@ class QuestionService extends ConfluenceClient
     /**
      * Get a question by its ID
      *
-     * @param $id question id
+     * @param $questionId question id
      *
-     * @return string
+     * @return Question|null
      */
-    public function getQuestionDetail($id)
+    public function getQuestionDetail($questionId)
     {
-        if (empty($id))
+        if (empty($questionId))
         {
             throw new ConfluenceException('Question id must be not null.! ');
         }
 
-        $ret = $this->exec($this->url . 'question/' . $id, null);
+        $ret = $this->exec($this->url . 'question/' . $questionId, null);
 
-        return $searchResults = $this->json_mapper->map(
+        return $question = $this->json_mapper->map(
             json_decode($ret),  new Question()
         );
+    }
 
+    /**
+     * Get a accepted answer
+     *
+     * @param $questionId
+     * @return Answer|null
+     */
+    public function getAcceptedAnswer($questionId)
+    {
+        $question = $this->getQuestionDetail($questionId);
+
+        if (empty($question) || empty($question->acceptedAnswerId))
+        {
+            return null;
+        }
+
+        $as = new AnswerService();
+
+        return $as->getAnswerDetail($question->acceptedAnswerId);
     }
 }

@@ -23,10 +23,7 @@ class QuestionTest extends PHPUnit_Framework_TestCase
         ];
 
         try {
-            $qs = new QuestionService(new \Lesstif\Confluence\Configuration\ArrayConfiguration([
-                'host' => 'https://wiki.modernpug.org'
-                       ])
-            );
+            $qs = new QuestionService();
 
             $questions = $qs->getQuestion($queryParam);
 
@@ -63,12 +60,34 @@ class QuestionTest extends PHPUnit_Framework_TestCase
 
             foreach($q->answers as $a)
             {
-                // print accepted answer
-                if ($a->accepted === true) {
-                    dump($a);
-                }
+                dump($a);
             }
 
+        } catch (\Lesstif\Confluence\ConfluenceException $e) {
+            $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
+        }
+
+        return $questionId;
+    }
+
+    /**
+     * @depends testGetQuestionDetail
+     */
+    public function testGetAcceptedAnswer($questionId)
+    {
+        global $argv, $argc;
+
+        // override command line parameter
+        if ($argc > 2) {
+            $questionId = $argv[2];
+        }
+
+        try {
+            $qs = new QuestionService();
+
+            $ans = $qs->getAcceptedAnswer($questionId);
+
+            dump(['Acccepted' => $ans]);
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
             $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
         }
