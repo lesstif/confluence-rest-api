@@ -19,4 +19,6 @@ class Question
 
     /** @var \Lesstif\Confluence\Question\Topic[] */
     public $topics;
+
+    public $acceptedAnswerId;
 }
