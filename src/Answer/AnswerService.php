@@ -58,7 +58,7 @@ class AnswerService extends ConfluenceClient
      *
      * @param $answerId answer id
      *
-     * @return string
+     * @return Answer|null
      */
     public function getAnswerDetail($answerId)
     {
@@ -78,7 +78,7 @@ class AnswerService extends ConfluenceClient
      * getting related answer
      *
      * @param $answerId
-     * @return Question
+     * @return Question|null
      * @throws ConfluenceException
      * @throws \JsonMapper_Exception
      */

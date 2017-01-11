@@ -157,16 +157,13 @@ try {
 
 ```php
 try {
-    $username = 'lesstif';
+    $answerId = '123456';
 
     $as = new AnswerService();
 
-    $ans = $as->getAnswers($username);
+    $q = $as->getQuestion($answerId);
 
-    foreach($ans as $a) {
-        dump($a);
-    }
-
+    dump($q);
 } catch (\Lesstif\Confluence\ConfluenceException $e) {
     $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
 }
