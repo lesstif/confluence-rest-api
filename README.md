@@ -24,14 +24,17 @@ you can choose loads environment variables either 'dotenv' or 'array'.
 
 copy .env.example file to .env on your project root directory.
 
+```
 CONFLUENCE_HOST="https://your-confluence.host.com"
 CONFLUENCE_USER="confluence-username"
 CONFLUENCE_PASS="confluence-password"
+```
 
 ### use array
 
 create Service class with ArrayConfiguration parameter.
 
+```php
 use Lesstif\Confluence\Question\QuestionService;
 
 $qs = new QuestionService(new \Lesstif\Confluence\Configuration\ArrayConfiguration(
@@ -41,6 +44,7 @@ $qs = new QuestionService(new \Lesstif\Confluence\Configuration\ArrayConfigurati
               'password' => 'confluence-password',
           ]
    ));
+```
 
 # Usage
 
