@@ -25,3 +25,4 @@ jira-rest-client.log
 
 .env
 log
+confluence-rest-client.log
