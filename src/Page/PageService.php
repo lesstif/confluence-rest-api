@@ -9,7 +9,7 @@ class PageService extends ConfluenceClient
 
     /**
      * @param $pageOrAttachmentId
-     * @return object
+     * @return Lesstif\Confluence\Page\Page
      * @throws \JsonMapper_Exception
      * @throws \Lesstif\Confluence\ConfluenceException
      */
@@ -63,8 +63,9 @@ class PageService extends ConfluenceClient
         $url = sprintf('%s/%s/child/page', $this->uri, $pageId);
 
         $ret = $this->exec($url);
+        $children = json_decode($ret);
 
-        $p->children = json_decode($ret);
+        $p->children = $children->results;
 
         return $p;
     }
