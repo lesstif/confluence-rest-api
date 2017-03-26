@@ -15,8 +15,8 @@ class DotEnvConfiguration extends AbstractConfiguration
         $dotenv->required(['CONFLUENCE_HOST']);
 
         $this->host = $this->env('CONFLUENCE_HOST');
-        $this->userser = $this->env('CONFLUENCE_USER');
-        $this->passwordassword = $this->env('CONFLUENCE_PASS');
+        $this->user = $this->env('CONFLUENCE_USER');
+        $this->password = $this->env('CONFLUENCE_PASS');
         $this->logFile = $this->env('CONFLUENCE_LOG_FILE', 'confluence-rest-client.log');
         $this->logLevel = $this->env('CONFLUENCE_LOG_LEVEL', 'WARNING');
         $this->sslVerify = $this->env('SSL_VERIFY', false);
