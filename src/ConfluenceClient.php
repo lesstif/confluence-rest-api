@@ -216,7 +216,7 @@ class ConfluenceClient
 
         curl_setopt($ch, CURLOPT_VERBOSE, $this->getConfiguration()->isVerbose());
 
-        $this->log->addDebug('Curl exec='.$url);
+        $this->log->addDebug('Curl exec='. $url . ',customreq=' . $custom_request);
         $response = curl_exec($ch);
 
         // if request failed.

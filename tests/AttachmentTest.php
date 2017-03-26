@@ -3,13 +3,13 @@
 use Lesstif\Confluence\Page\Page;
 use \Lesstif\Confluence\Page\PageService;
 
-class PageTest extends PHPUnit_Framework_TestCase
+class AttachmentTest extends PHPUnit_Framework_TestCase
 {
-    public function testGetPage()
+    public function testGetAttachment()
     {
         global $argv, $argc;
 
-        $pageId = '59444134';
+        $attId = 'att59445561';
 
         // override command line parameter
         if ($argc > 2) {
@@ -19,26 +19,26 @@ class PageTest extends PHPUnit_Framework_TestCase
         try {
             $ps = new PageService();
 
-            $p = $ps->getPage($pageId);
+            $p = $ps->getAttachment($attId);
 
-            //$this->assertClassNotHasAttribute('id', $p);
+            dump($p);
 
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
             $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
         }
 
-        return $pageId;
+        return $attId;
     }
 
     /**
-     * @depends testGetPage
+     * @depends testGetAttachmentqwe
      */
-    public function testGetChildPage($pageId)
+    public function testGetChildPage($attId)
     {
         try {
             $ps = new PageService();
 
-            $p = $ps->getChild($pageId);
+            $p = $ps->getChild($attId);
 
             //print attachments
             $i = 0;
@@ -47,16 +47,12 @@ class PageTest extends PHPUnit_Framework_TestCase
                     break;
 
                 dump($a);
-                $ret = $ps->deletePage($a->id);
-                dump($ret);
-                break;
             }
 
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
             $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
         }
 
-        return $pageId;
+        return $attId;
     }
-
 }
