@@ -1,6 +1,5 @@
 <?php
 
-use Lesstif\Confluence\Page\Page;
 use \Lesstif\Confluence\Page\PageService;
 use Lesstif\Confluence\Dumper;
 
@@ -10,22 +9,28 @@ class PageTest extends PHPUnit_Framework_TestCase
     {
         global $argv, $argc;
 
-        $pageId = '59444134';
+        $pageId = '59452438';
 
         // override command line parameter
-        if ($argc > 2) {
+
+        if ($argc === 3) {
+            Dumper::dump($argv);
             $pageId = $argv[2];
         }
 
         try {
             $ps = new PageService();
 
-            $p = $ps->getPage($pageId);
+            $pages = $ps->getPage($pageId);
 
             //$this->assertClassNotHasAttribute('id', $p);
-            //Dumper::dd($p);
+            foreach($pages as $page) {
+                Dumper::dump($page);
+                //exit(0);
+            }
+
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
-            $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
+            $this->assertTrue(false, 'testGetSpace Failed : ' . $e->getMessage());
         }
 
         return $pageId;

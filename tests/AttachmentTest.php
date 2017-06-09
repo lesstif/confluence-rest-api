@@ -9,17 +9,17 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
     {
         global $argv, $argc;
 
-        $attId = 'att59445561';
+        $pageId = '59452396';
 
         // override command line parameter
-        if ($argc > 2) {
+        if ($argc === 3) {
             $pageId = $argv[2];
         }
 
         try {
             $ps = new PageService();
 
-            $p = $ps->getAttachment($attId);
+            $p = $ps->downloadAttachments($pageId, "d:\\");
 
             dump($p);
 
@@ -27,11 +27,11 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
             $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
         }
 
-        return $attId;
+        return $pageId;
     }
 
     /**
-     * @depends testGetAttachmentqwe
+     * @depends testGetAttachment
      */
     public function testGetChildPage($attId)
     {
