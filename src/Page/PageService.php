@@ -1,7 +1,7 @@
 <?php namespace Lesstif\Confluence\Page;
 
 use Lesstif\Confluence\ConfluenceClient;
-use Symfony\Component\VarDumper\VarDumper;
+use SplFileObject;
 
 class PageService extends ConfluenceClient
 {
@@ -68,5 +68,39 @@ class PageService extends ConfluenceClient
         $p->children = $children->results;
 
         return $p;
+    }
+
+    /**
+     * download all attachment in the current page
+     *
+     * @param $pageId
+     * @param $destination output directory
+     * @return Page
+     * @throws \Lesstif\Confluence\ConfluenceException
+     */
+    public function downloadAttachments($pageId, $destination)
+    {
+        // get attachements
+        $url = sprintf('%s/%s/child/attachment', $this->uri, $pageId);
+
+        $ret = $this->exec($url);
+
+        $atts = json_decode($ret);
+
+        $attachments = $this->json_mapper->mapArray(
+            $atts->results,  new \ArrayObject(), '\Lesstif\Confluence\Page\Attachment'
+        );
+
+        foreach($attachments as $a) {
+            $url =  $this->getConfiguration()->getHost() . $a->_links->download;
+            $content = $this->exec($url, null, null, true);
+
+            $file = new SplFileObject($destination . '/' . $a->title, "w");
+            $written = $file->fwrite($content);
+
+            $file->fflush();
+        }
+
+        return true;
     }
 }

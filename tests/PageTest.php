@@ -2,6 +2,7 @@
 
 use Lesstif\Confluence\Page\Page;
 use \Lesstif\Confluence\Page\PageService;
+use Lesstif\Confluence\Dumper;
 
 class PageTest extends PHPUnit_Framework_TestCase
 {
@@ -22,7 +23,7 @@ class PageTest extends PHPUnit_Framework_TestCase
             $p = $ps->getPage($pageId);
 
             //$this->assertClassNotHasAttribute('id', $p);
-
+            //Dumper::dd($p);
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
             $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
         }
@@ -42,11 +43,12 @@ class PageTest extends PHPUnit_Framework_TestCase
 
             //print attachments
             $i = 0;
-            foreach($p->attachments as $a) {
+            //foreach($p->attachments as $a) {
+            foreach($p->children as $a) {
                 if ($i++ > 3)
                     break;
 
-                dump($a);
+                Dumper::dd($a);
                 $ret = $ps->deletePage($a->id);
                 dump($ret);
                 break;
