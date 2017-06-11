@@ -9,7 +9,8 @@
         "netresearch/jsonmapper": "~0.11",
         "monolog/monolog": "~1.12",
         "vlucas/phpdotenv": "~2.0",
-	"tightenco/collect": "5.3.*"
+	    "tightenco/collect": "5.3.*",
+        "league/flysystem": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": ">=4.4 <6",

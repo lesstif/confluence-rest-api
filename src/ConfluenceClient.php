@@ -179,9 +179,9 @@ class ConfluenceClient
      *
      * @throws ConfluenceException
      */
-    public function exec($context, $post_data = null, $custom_request = null)
+    public function exec($context, $post_data = null, $custom_request = null, $isFqdn = false)
     {
-        $url = $this->createUrlByContext($context);
+        $url = $this->createUrlByContext($context, $isFqdn);
 
         $this->log->addDebug("Curl $url JsonData=".$post_data);
 
@@ -402,8 +402,12 @@ end:
      *
      * @return string
      */
-    protected function createUrlByContext($context)
+    protected function createUrlByContext($context, $isFqdn = false)
     {
+        if ($isFqdn == true){
+            return $context;
+        }
+
         $host = $this->getConfiguration()->getHost();
 
         return $host.$this->api_uri.'/'.preg_replace('/\//', '', $context, 1);
