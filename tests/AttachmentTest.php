@@ -19,7 +19,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         try {
             $ps = new PageService();
 
-            $p = $ps->downloadAttachments($pageId, "d:\\");
+            $p = $ps->downloadAttachments($pageId, "d:/attr");
 
             dump($p);
 
@@ -38,7 +38,7 @@ class AttachmentTest extends PHPUnit_Framework_TestCase
         try {
             $ps = new PageService();
 
-            $p = $ps->getChild($attId);
+            $p = $ps->getChildPage($attId);
 
             //print attachments
             $i = 0;

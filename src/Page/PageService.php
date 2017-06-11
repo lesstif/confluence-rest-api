@@ -78,7 +78,7 @@ class PageService extends ConfluenceClient
      * @return Page
      * @throws \Lesstif\Confluence\ConfluenceException
      */
-    public function getAttachment($pageId)
+    public function getAttachmentList($pageId)
     {
         $p = new Page();
 
@@ -114,6 +114,8 @@ class PageService extends ConfluenceClient
      */
     public function downloadAttachments($pageId, $destination = '.' )
     {
+        $page = $this->getPage($pageId);
+
         // get attachements
         $url = sprintf('%s/%s/child/attachment', $this->uri, $pageId);
 
@@ -125,16 +127,26 @@ class PageService extends ConfluenceClient
             $atts->results,  new \ArrayObject(), '\Lesstif\Confluence\Page\Attachment'
         );
 
+        $files = [];
+
         foreach($attachments as $a) {
+            array_push($files, $a->title);
+
             $url =  $this->getConfiguration()->getHost() . $a->_links->download;
             $content = $this->exec($url, null, null, true);
 
             $adapter = new Local($destination);
             $filesystem = new Filesystem($adapter);
 
-            $filesystem->write($a->title, $content);
+            $fileName = $a->title;
+            if (defined('PHP_WINDOWS_VERSION_MAJOR') === true) {
+                $fileName = iconv('UTF-8', 'CP949', $fileName);
+            }
+
+            $filesystem->put($page->title . DIRECTORY_SEPARATOR . $fileName, $content);
+
         }
 
-        return true;
+        return $files;
     }
 }
