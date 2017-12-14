@@ -1,8 +1,9 @@
 <?php
 
 use \Lesstif\Confluence\Space\SpaceService;
+use PHPUnit\Framework\TestCase;
 
-class SpaceTest extends PHPUnit_Framework_TestCase
+class SpaceTest extends TestCase
 {
     public function testGetSpace()
     {

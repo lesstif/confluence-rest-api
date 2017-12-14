@@ -4,9 +4,19 @@ Atlassian's Confluence & Confluence Question REST API Client for PHP Users.
 
 ## installation
 
-```sh
-composer require 'lesstif/confluence-rest-api'
-```
+1. Install PHP Composer manually or download it from [composer home page](https://getcomposer.org/download/).
+    
+    ```sh
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    php composer-setup.php
+    php -r "unlink('composer-setup.php');"
+     ```
+
+1. run composer for install dependency.
+
+    ```sh
+    php composer.phar require 'lesstif/confluence-rest-api'
+    ```
 
 or update your composer.json.
 

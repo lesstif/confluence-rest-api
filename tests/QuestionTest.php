@@ -1,8 +1,9 @@
 <?php
 
 use \Lesstif\Confluence\Question\QuestionService;
+use PHPUnit\Framework\TestCase;
 
-class QuestionTest extends PHPUnit_Framework_TestCase
+class QuestionTest extends TestCase
 {
     public function testGetQuestion()
     {

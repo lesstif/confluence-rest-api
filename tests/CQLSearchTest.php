@@ -1,8 +1,9 @@
 <?php
 
 use \Lesstif\Confluence\CQL\CQLService;
+use PHPUnit\Framework\TestCase;
 
-class CQLSearchTest extends PHPUnit_Framework_TestCase
+class CQLSearchTest extends TestCase
 {
     public function testSearch()
     {

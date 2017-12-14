@@ -2,8 +2,9 @@
 
 use \Lesstif\Confluence\Page\PageService;
 use Lesstif\Confluence\Dumper;
+use PHPUnit\Framework\TestCase;
 
-class PageTest extends PHPUnit_Framework_TestCase
+class PageTest extends TestCase
 {
     public function testGetPage()
     {

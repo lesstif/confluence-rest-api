@@ -2,8 +2,9 @@
 
 use Lesstif\Confluence\Page\Page;
 use \Lesstif\Confluence\Page\PageService;
+use PHPUnit\Framework\TestCase;
 
-class AttachmentTest extends PHPUnit_Framework_TestCase
+class AttachmentTest extends TestCase
 {
     public function testGetAttachment()
     {
