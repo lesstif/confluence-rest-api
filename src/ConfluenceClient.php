@@ -440,15 +440,11 @@ end:
 
     private function newGuzzleClient(array $param = [])
     {
-        Dumper::dd($this->configuration);
-
         $param = array_merge([
             'base_uri' => $this->configuration->getHost(),
             'timeout' => 10.0,
             'verify' => true,
         ], $param);
-
-        Dumper::dump($param);
 
         $guzzle = new \GuzzleHttp\Client($param);
 
