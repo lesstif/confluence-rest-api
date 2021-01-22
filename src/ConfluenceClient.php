@@ -139,29 +139,27 @@ class ConfluenceClient
     }
 
     /**
-     *  Execute REST get action.
+     *
+     * Execute REST get action.
      *
      * @param $uri
-     *
+     * @param array $httpParam
      * @return mixed
-     *
-     * @throws
+     * @throws ConfluenceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function get($uri)
+    public function get($uri, $httpParam = [])
     {
-        $client = new \GuzzleHttp\Client([
-            'base_uri' => $this->gitHost,
-            'timeout' => 10.0,
-            'verify' => false,
-        ]);
-        $response = $client->get($this->gitHost.$this->api_uri.$uri, [
+        $client = $this->newGuzzleClient();
+
+        $response = $client->get($this->api_uri.$uri, [
             'query' => [
-                'private_token' => $this->gitToken,
-                'per_page' => 10000,
+                'per_page' => 10,
             ],
         ]);
+
         if ($response->getStatusCode() != 200) {
-            throw GitlabException('Http request failed. status code : '
+            throw new ConfluenceException('Http request failed. status code : '
                 .$response->getStatusCode().' reason:'.$response->getReasonPhrase());
         }
 
@@ -183,7 +181,7 @@ class ConfluenceClient
     {
         $url = $this->createUrlByContext($context, $isFqdn);
 
-        $this->log->addDebug("Curl $url JsonData=".$post_data);
+        $this->log->debug("Curl $url JsonData=".$post_data);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -217,7 +215,7 @@ class ConfluenceClient
 
         curl_setopt($ch, CURLOPT_VERBOSE, $this->getConfiguration()->isVerbose());
 
-        $this->log->addDebug('Curl exec='. $url . ',customreq=' . $custom_request);
+        $this->log->debug('Curl exec='. $url . ',customreq=' . $custom_request);
         $response = curl_exec($ch);
 
         // if request failed.
@@ -232,7 +230,7 @@ class ConfluenceClient
             }
 
             // HostNotFound, No route to Host, etc Network error
-            $this->log->addError('CURL Error: = '.$body);
+            $this->log->error('CURL Error: = '.$body);
             throw new ConfluenceException('CURL Error: = '.$body);
         } else {
             // if request was ok, parsing http response code.
@@ -275,7 +273,7 @@ class ConfluenceClient
             curl_setopt($ch, CURLOPT_POSTFIELDS,
                 array('file' => '@'.$attachments.';filename='.$filename));
 
-            $this->log->addDebug('using legacy file upload');
+            $this->log->debug('using legacy file upload');
         } else {
             // CURLFile require PHP > 5.5
             $attachments = new \CURLFile(realpath($upload_file));
@@ -284,7 +282,7 @@ class ConfluenceClient
             curl_setopt($ch, CURLOPT_POSTFIELDS,
                     array('file' => $attachments));
 
-            $this->log->addDebug('using CURLFile='.var_export($attachments, true));
+            $this->log->debug('using CURLFile='.var_export($attachments, true));
         }
 
         $this->authorization($ch);
@@ -302,7 +300,7 @@ class ConfluenceClient
 
         curl_setopt($ch, CURLOPT_VERBOSE, $this->getConfiguration()->isCurlOptVerbose());
 
-        $this->log->addDebug('Curl exec='.$url);
+        $this->log->debug('Curl exec='.$url);
 
         return $ch;
     }
@@ -364,7 +362,7 @@ class ConfluenceClient
                 // HostNotFound, No route to Host, etc Network error
                 $result_code = -1;
                 $body = 'CURL Error: = '.$body;
-                $this->log->addError($body);
+                $this->log->error($body);
             } else {
                 // if request was ok, parsing http response code.
                 $result_code = $this->http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -374,7 +372,7 @@ class ConfluenceClient
                     $body = 'CURL HTTP Request Failed: Status Code : '
                      .$this->http_response.', URL:'.$url
                      ."\nError Message : ".$response; // @TODO undefined variable $response
-                    $this->log->addError($body);
+                    $this->log->error($body);
                 }
             }
         }
@@ -382,11 +380,11 @@ class ConfluenceClient
         // clean up
 end:
         foreach ($chArr as $ch) {
-            $this->log->addDebug('CURL Close handle..');
+            $this->log->debug('CURL Close handle..');
             curl_close($ch);
             curl_multi_remove_handle($mh, $ch);
         }
-        $this->log->addDebug('CURL Multi Close handle..');
+        $this->log->debug('CURL Multi Close handle..');
         curl_multi_close($mh);
         if ($result_code != 200) {
             // @TODO $body might have not been defined
@@ -438,5 +436,22 @@ end:
     public function getConfiguration()
     {
         return $this->configuration;
+    }
+
+    private function newGuzzleClient(array $param = [])
+    {
+        Dumper::dd($this->configuration);
+
+        $param = array_merge([
+            'base_uri' => $this->configuration->getHost(),
+            'timeout' => 10.0,
+            'verify' => true,
+        ], $param);
+
+        Dumper::dump($param);
+
+        $guzzle = new \GuzzleHttp\Client($param);
+
+        return $guzzle;
     }
 }

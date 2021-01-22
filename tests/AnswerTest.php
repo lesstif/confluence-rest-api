@@ -3,7 +3,7 @@
 use \Lesstif\Confluence\Answer\AnswerService;
 use PHPUnit\Framework\TestCase;
 
-class QuestionTest extends TestCase
+class AnswerTest extends TestCase
 {
     public function testGetAnswers()
     {

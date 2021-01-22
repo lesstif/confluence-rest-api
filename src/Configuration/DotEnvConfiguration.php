@@ -1,5 +1,8 @@
 <?php namespace Lesstif\Confluence\Configuration;
 
+use Lesstif\Confluence\ConfluenceException;
+use Lesstif\Confluence\Dumper;
+
 /**
  * Class DotEnvConfiguration.
  */
@@ -10,9 +13,7 @@ class DotEnvConfiguration extends AbstractConfiguration
      */
     public function __construct($path = '.')
     {
-        $dotenv = new \Dotenv\Dotenv($path);
-        $dotenv->load();
-        $dotenv->required(['CONFLUENCE_HOST']);
+        $this->loadDotEnv($path);
 
         $this->host = $this->env('CONFLUENCE_HOST');
         $this->user = $this->env('CONFLUENCE_USER');
@@ -34,7 +35,7 @@ class DotEnvConfiguration extends AbstractConfiguration
      */
     private function env($key, $default = null)
     {
-        $value = getenv($key);
+        $value = $_ENV[$key] ?? false;
 
         if ($value === false) {
             return $default;
@@ -55,10 +56,10 @@ class DotEnvConfiguration extends AbstractConfiguration
 
             case 'null':
             case '(null)':
-                return;
+                return null;
         }
 
-        if ($this->startsWith($value, '"') && endsWith($value, '"')) {
+        if ($this->startsWith($value, '"') && $this->endsWith($value, '"')) {
             return substr($value, 1, -1);
         }
 
@@ -101,5 +102,24 @@ class DotEnvConfiguration extends AbstractConfiguration
         }
 
         return false;
+    }
+
+    /**
+     * load dotenv.
+     *
+     * @param string $path
+     *
+     * @throws ConfluenceException
+     */
+    private function loadDotEnv(string $path)
+    {
+        $requireParam = [
+            'CONFLUENCE_HOST', 'CONFLUENCE_USER', 'CONFLUENCE_PASS',
+        ];
+
+        $dotenv = \Dotenv\Dotenv::createImmutable($path);
+
+        $dotenv->load();
+        $dotenv->required($requireParam);
     }
 }

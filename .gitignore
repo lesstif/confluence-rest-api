@@ -26,3 +26,5 @@ jira-rest-client.log
 .env
 log
 confluence-rest-client.log
+.phpunit.result.cache
+phpunit.xml.bak

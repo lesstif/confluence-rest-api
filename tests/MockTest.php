@@ -1,6 +1,7 @@
 <?php
 
 use \Mockery as m;
+use PHPUnit\Framework\TestCase;
 
 class Temperature
 {
@@ -20,9 +21,9 @@ class Temperature
     }
 }
 
-class MockTest extends PHPUnit_Framework_TestCase
+class MockTest extends TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         m::close();
     }

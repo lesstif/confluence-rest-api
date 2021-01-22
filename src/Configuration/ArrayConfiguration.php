@@ -12,7 +12,7 @@ class ArrayConfiguration extends AbstractConfiguration
      */
     public function __construct(array $configuration)
     {
-        $this->logFile = 'conflience-rest-client.log';
+        $this->logFile = 'confluence-rest-client.log';
         $this->logLevel = 'WARNING';
         $this->sslVerify = false;
         $this->timeOut = 10.0;

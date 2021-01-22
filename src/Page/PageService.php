@@ -18,7 +18,7 @@ class PageService extends ConfluenceClient
     {
         $url = sprintf('%s/%s', $this->uri, $pageOrAttachmentId);
 
-        $ret = $this->exec($url);
+        $ret = $this->get($url);
 
         return $page = $this->json_mapper->map(
             json_decode($ret), new Page()

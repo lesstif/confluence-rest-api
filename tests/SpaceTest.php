@@ -1,5 +1,6 @@
 <?php
 
+use Lesstif\Confluence\Question\QuestionService;
 use \Lesstif\Confluence\Space\SpaceService;
 use PHPUnit\Framework\TestCase;
 
