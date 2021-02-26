@@ -26,12 +26,12 @@ class SpaceService extends ConfluenceClient
     /**
      * get question list
      *
-     * @param spaceKeyArray a list of space keys
-     * @param paramArray parameter array
+     * @param array $spaceKeyArray a list of space keys
+     * @param string|null $paramArray parameter array
      * @return mixed
      * @throws \Lesstif\Confluence\ConfluenceException
      */
-    public function getSpace($spaceKeysParam, $paramArray = null)
+    public function getSpace(array $spaceKeyArray, string $paramArray = null)
     {
         // set default param
         if (empty($paramArray))
@@ -40,9 +40,9 @@ class SpaceService extends ConfluenceClient
         }
 
         $queryParam = null;
-        if (!empty($spaceKeysParam)) {
+        if (!empty($spaceKeyArray)) {
             $spaceParam = '&';
-            foreach ($spaceKeysParam as $k) {
+            foreach ($spaceKeyArray as $k) {
                 $spaceParam = $spaceParam . 'spaceKey=' . $k . '&';
             }
 

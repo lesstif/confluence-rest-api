@@ -4,17 +4,21 @@ use Lesstif\Confluence\ConfluenceClient;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 
+/**
+ * Class PageService
+ * @package Lesstif\Confluence\Page
+ */
 class PageService extends ConfluenceClient
 {
     public $uri = '/api/content';
 
     /**
-     * @param $pageOrAttachmentId
+     * @param string $pageOrAttachmentId
      * @return \Lesstif\Confluence\Page\Page
      * @throws \JsonMapper_Exception
      * @throws \Lesstif\Confluence\ConfluenceException
      */
-    public function getPage($pageOrAttachmentId)
+    public function getPage(string $pageOrAttachmentId) : \Lesstif\Confluence\Page\Page
     {
         $url = sprintf('%s/%s', $this->uri, $pageOrAttachmentId);
 
@@ -25,7 +29,13 @@ class PageService extends ConfluenceClient
         );
     }
 
-    public function updatePage($pageOrAttachmentId)
+    /**
+     * @param string $pageOrAttachmentId
+     * @return Page
+     * @throws \JsonMapper_Exception
+     * @throws \Lesstif\Confluence\ConfluenceException
+     */
+    public function updatePage(string $pageOrAttachmentId): Page
     {
         $url = sprintf('%s/%s', $this->uri, $pageOrAttachmentId);
 
@@ -36,7 +46,12 @@ class PageService extends ConfluenceClient
         );
     }
 
-    public function deletePage($pageOrAttachmentId)
+    /**
+     * @param string $pageOrAttachmentId
+     * @return int|string
+     * @throws \Lesstif\Confluence\ConfluenceException
+     */
+    public function deletePage(string $pageOrAttachmentId)
     {
         $url = sprintf('%s/%s', $this->uri, $pageOrAttachmentId);
 
@@ -45,7 +60,13 @@ class PageService extends ConfluenceClient
         return $this->http_response;
     }
 
-    public function getChildPage($pageId)
+    /**
+     * @param string $pageId
+     * @return Page
+     * @throws \JsonMapper_Exception
+     * @throws \Lesstif\Confluence\ConfluenceException
+     */
+    public function getChildPage(string $pageId) : Page
     {
         $p = new Page();
 
@@ -74,11 +95,11 @@ class PageService extends ConfluenceClient
     /**
      * get current page's attachements list
      *
-     * @param $pageId
+     * @param string $pageId
      * @return Page
      * @throws \Lesstif\Confluence\ConfluenceException
      */
-    public function getAttachmentList($pageId)
+    public function getAttachmentList(string $pageId) : Page
     {
         $p = new Page();
 
@@ -107,12 +128,14 @@ class PageService extends ConfluenceClient
     /**
      * download all attachment in the current page
      *
-     * @param $pageId
-     * @param $destination output directory
-     * @return Page
+     * @param string $pageId
+     * @param string $destination output directory
+     * @return array array of downloaded file list.
      * @throws \Lesstif\Confluence\ConfluenceException
+     *
+     * TODO
      */
-    public function downloadAttachments($pageId, $destination = '.' )
+    public function downloadAttachments(string $pageId, string $destination = '.' ) : array
     {
         $page = $this->getPage($pageId);
 
@@ -135,7 +158,7 @@ class PageService extends ConfluenceClient
             $url =  $this->getConfiguration()->getHost() . $a->_links->download;
             $content = $this->exec($url, null, null, true);
 
-            $adapter = new Local($destination);
+            $adapter = new \League\Flysystem\Local\LocalFilesystemAdapter($destination);
             $filesystem = new Filesystem($adapter);
 
             $fileName = $a->title;
@@ -143,7 +166,7 @@ class PageService extends ConfluenceClient
                 $fileName = iconv('UTF-8', 'CP949', $fileName);
             }
 
-            $filesystem->put($page->title . DIRECTORY_SEPARATOR . $fileName, $content);
+            $filesystem->write($page->title . DIRECTORY_SEPARATOR . $fileName, $content);
 
         }
 

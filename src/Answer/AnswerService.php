@@ -56,11 +56,13 @@ class AnswerService extends ConfluenceClient
     /**
      * Get a answer detail by its ID
      *
-     * @param $answerId answer id
+     * @param string $answerId answer id
      *
      * @return Answer|null
+     *
+     * @throws ConfluenceException
      */
-    public function getAnswerDetail($answerId)
+    public function getAnswerDetail(string $answerId) : ?Answer
     {
         if (empty($answerId))
         {
@@ -77,12 +79,13 @@ class AnswerService extends ConfluenceClient
     /**
      * getting related answer
      *
-     * @param $answerId
+     * @param string $answerId
+     *
      * @return Question|null
      * @throws ConfluenceException
      * @throws \JsonMapper_Exception
      */
-    public function getQuestion($answerId)
+    public function getQuestion(string $answerId) : ?Question
     {
         $answer = $this->getAnswerDetail($answerId);
 

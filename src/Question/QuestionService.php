@@ -11,6 +11,7 @@ use Lesstif\Confluence\Constants;
  * Confluence Questions REST Service class
  *
  * @package Lesstif\Confluence\Question
+ *
  */
 class QuestionService extends ConfluenceClient
 {
@@ -52,11 +53,11 @@ class QuestionService extends ConfluenceClient
     /**
      * Get a question by its ID
      *
-     * @param $questionId question id
+     * @param string $questionId question id
      *
      * @return Question|null
      */
-    public function getQuestionDetail($questionId)
+    public function getQuestionDetail(string $questionId)
     {
         // clear old value
         $this->accceptedAnswerId = null;
@@ -80,10 +81,11 @@ class QuestionService extends ConfluenceClient
     /**
      * Get a accepted answer
      *
-     * @param $questionId
+     * @param string $questionId
      * @return Answer|null
+     * @throws ConfluenceException
      */
-    public function getAcceptedAnswer($questionId)
+    public function getAcceptedAnswer(string $questionId) : ?Answer
     {
         $question = $this->getQuestionDetail($questionId);
 
@@ -100,13 +102,14 @@ class QuestionService extends ConfluenceClient
     /**
      * determine question has accepted answer
      *
-     * @param null $questionId
-     * @return bool|null
+     * @param string|null $questionId
+     * @return bool
      */
-    public function hasAcceptedAnswer($questionId = null)
+    public function hasAcceptedAnswer(string $questionId = null) : bool
     {
-        if ($questionId === null)
+        if ($questionId === null) {
             return !is_null($this->accceptedAnswerId) ? true : false;
+        }
 
         $as = $this->getAcceptedAnswer($questionId);
 

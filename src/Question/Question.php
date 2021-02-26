@@ -13,13 +13,15 @@ class Question
 
     public $friendlyDateAsked;
 
+    /** @var \DateTimeInterface */
     public $dateAsked;
 
+    /** @var int */
     public $answersCount;
 
     /** @var \Lesstif\Confluence\Question\Topic[] */
     public $topics;
 
-    /** @var integer */
+    /** @var string */
     public $acceptedAnswerId;
 }
