@@ -3,28 +3,32 @@
 class Space
 {
     /**
-     * @var integer the start point of the collection to return
-     */
-    public $start;
-
-    /**
-     * @var integer the limit of the number of spaces to return, this may be restricted by fixed system limits
-     * (Default 25)
-     */
-    public $limit;
-
-    /**
      * @var integer
      */
-    public $size;
+    public $id;
 
     /**
-     * @var array a list of result
+     * @var string
      */
-    public $results;
+    public $key;
+
+    /**
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $type;
 
     /**
      * @var array
      */
     public $_links;
+
+    /**
+     * @var array
+     */
+    public $_expandable;
 }

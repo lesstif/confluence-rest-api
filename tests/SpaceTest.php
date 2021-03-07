@@ -26,14 +26,27 @@ class SpaceTest extends TestCase
             'status' => 'current',
         ];
 
+        $spaces = [];
+
         try {
             $ss = new SpaceService();
 
-            $spaces = $ss->getSpace(null);
+            $sp = $ss->getSpace(null);
 
-            foreach($spaces as $s) {
-                dump($s);
+            $spaces[] = $sp;
+
+            $this->assertNotEquals(0, $sp->size);
+
+            while(true) {
+                if (!empty($spaces->_links['next'])) {
+                    $sp = $ss->getNext(null, $sp->_links['next']);
+                    $spaces[] = $sp;
+                } else {
+                    break;
+                }
             }
+
+            dump($spaces);
 
         } catch (\Lesstif\Confluence\ConfluenceException $e) {
             $this->assertTrue(false, 'testGetSpace Failed : '.$e->getMessage());
@@ -42,55 +55,4 @@ class SpaceTest extends TestCase
         return $questionId;
     }
 
-    /**
-     * @depends testGetQuestion
-     */
-    public function testGetQuestionDetail($questionId)
-    {
-        global $argv, $argc;
-
-        // override command line parameter
-        if ($argc > 2) {
-            $questionId = $argv[2];
-        }
-
-        try {
-            $qs = new QuestionService();
-
-            $q = $qs->getQuestionDetail($questionId);
-
-            foreach($q->answers as $a)
-            {
-                dump($a);
-            }
-
-        } catch (\Lesstif\Confluence\ConfluenceException $e) {
-            $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
-        }
-
-        return $questionId;
-    }
-
-    /**
-     * @depends testGetQuestionDetail
-     */
-    public function testGetAcceptedAnswer($questionId)
-    {
-        global $argv, $argc;
-
-        // override command line parameter
-        if ($argc > 2) {
-            $questionId = $argv[2];
-        }
-
-        try {
-            $qs = new QuestionService();
-
-            $ans = $qs->getAcceptedAnswer($questionId);
-
-            dump(['Acccepted' => $ans]);
-        } catch (\Lesstif\Confluence\ConfluenceException $e) {
-            $this->assertTrue(false, 'testSearch Failed : '.$e->getMessage());
-        }
-    }
 }

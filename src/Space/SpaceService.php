@@ -26,12 +26,13 @@ class SpaceService extends ConfluenceClient
     /**
      * get question list
      *
-     * @param array $spaceKeyArray a list of space keys
+     * @param array|null $spaceKeyArray a list of space keys
      * @param string|null $paramArray parameter array
-     * @return mixed
+     * @return SpaceCollection
      * @throws \Lesstif\Confluence\ConfluenceException
+     * @throws \JsonMapper_Exception
      */
-    public function getSpace(array $spaceKeyArray, string $paramArray = null)
+    public function getSpace(?array $spaceKeyArray, ?array $paramArray = null) : SpaceCollection
     {
         // set default param
         if (empty($paramArray))
@@ -55,9 +56,27 @@ class SpaceService extends ConfluenceClient
 
         $ar = json_decode($ret);
 
-        return $searchResults = $this->json_mapper->mapArray(
-            $ar->results,  new \ArrayObject(), '\Lesstif\Confluence\Space\Space'
+        return $searchResults = $this->json_mapper->map(
+            json_decode($ret),  new \Lesstif\Confluence\Space\SpaceCollection
         );
     }
 
+    /**
+     * @param array|null $spaceKeyArray
+     * @param string $next
+     * @return SpaceCollection
+     * @throws ConfluenceException
+     * @throws \JsonMapper_Exception
+     */
+    public function getNext(?array $spaceKeyArray, string $next)
+    {
+        $url = parse_url($next);
+
+        $paramArray = null;
+        if (! empty($url['query'])) {
+            parse_str($url['query'], $paramArray);
+        }
+
+        return $this->getSpace($spaceKeyArray, $paramArray);
+    }
 }
