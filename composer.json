@@ -4,14 +4,14 @@
     "type": "library",
     "keywords": ["confluence", "rest", "confluence-php", "confluence-rest"],
     "require": {
-        "php": "^7.4",
+        "php": "^7.3|^8.0",
         "ext-curl": "*",
         "ext-json": "*",
-        "netresearch/jsonmapper": "^2.0",
+        "netresearch/jsonmapper": "^2.0|^3.0|^4.0",
         "monolog/monolog": "~1.12|^2.0",
         "vlucas/phpdotenv": "^4.0|^5.0",
-        "guzzlehttp/guzzle": "^7.2",
-        "league/flysystem": "^2.0",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "league/flysystem": "^1.1",
         "ext-iconv": "*"
     },
     "require-dev": {
